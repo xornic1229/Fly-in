@@ -1,7 +1,6 @@
-
 from __future__ import annotations
 
-from src.entities import Game, Drone, Node
+from src.entities import Game, Drone, Node, Edge
 
 
 VALID_ZONE_TYPES: set[str] = {"normal", "blocked", "restricted", "priority"}
@@ -39,7 +38,6 @@ def parse_input_file(file_path: str) -> Game:
                 [],
             )
             game.nodes[name] = node
-            game.edges[name] = []
             game.start_node = node
 
         elif line.startswith("end_hub:"):
@@ -62,7 +60,6 @@ def parse_input_file(file_path: str) -> Game:
                 [],
             )
             game.nodes[name] = node
-            game.edges[name] = []
             game.end_node = node
 
         elif line.startswith("hub:"):
@@ -82,42 +79,50 @@ def parse_input_file(file_path: str) -> Game:
                 [],
             )
             game.nodes[name] = node
-            game.edges[name] = []
 
         elif line.startswith("connection:"):
-            node1, node2, attributes = parse_connection_line(line, line_number)
+            node1_name, node2_name, attributes = parse_connection_line(line, line_number)
 
-            if node1 not in game.nodes:
-                raise Exception(f"Error in line {line_number}: connection references undefined node '{node1}'")
-            if node2 not in game.nodes:
-                raise Exception(f"Error in line {line_number}: connection references undefined node '{node2}'")
+            if node1_name not in game.nodes:
+                raise Exception(f"Error in line {line_number}: connection references undefined node '{node1_name}'")
+            if node2_name not in game.nodes:
+                raise Exception(f"Error in line {line_number}: connection references undefined node '{node2_name}'")
 
-            normalized_connection = tuple(sorted((node1, node2)))
+            normalized_connection = tuple(sorted((node1_name, node2_name)))
             if normalized_connection in seen_connections:
                 raise Exception(
-                    f"Error in line {line_number}: duplicated connection '{node1}-{node2}'"
+                    f"Error in line {line_number}: duplicated connection '{node1_name}-{node2_name}'"
                 )
             seen_connections.add(normalized_connection)
 
-            game.edges[node1].append(node2)
-            game.edges[node2].append(node1)
-            game.nodes[node1].edges.append(node2)
-            game.nodes[node2].edges.append(node1)
+            node1: Node = game.nodes[node1_name]
+            node2: Node = game.nodes[node2_name]
+
+            edge = Edge(
+                node1,
+                node2,
+                attributes.get("max_link_capacity", 1),
+            )
+
+            game.edges[normalized_connection] = edge
+            node1.edges.append(edge)
+            node2.edges.append(edge)
 
         else:
             raise Exception(f"Error in line {line_number}: invalid line format")
-        
+
     if game.start_node is None:
         raise Exception("Error: missing start_hub")
     if game.end_node is None:
         raise Exception("Error: missing end_hub")
-    
-    for i in range(game.nb_drones):
+
+    for i in range(1, game.nb_drones + 1):
         drone = Drone(i, game.start_node)
         game.drones.append(drone)
         game.start_node.current_drones.append(drone)
 
     return game
+
 
 def parse_nb_drones(line: str, line_number: int) -> int:
     if not line.startswith("nb_drones:"):
@@ -148,7 +153,6 @@ def parse_node_line(line: str, line_number: int) -> tuple[str, int, int, dict[st
     if len(parts) != 4:
         raise Exception(f"Error in line {line_number}: invalid node definition")
 
-    # start_hub:/end_hub:/hub:  name  x  y
     name: str = parts[1]
 
     try:
@@ -215,6 +219,9 @@ def parse_node_metadata(raw_metadata: str | None, line_number: int) -> dict[str,
 
         key, value = item.split("=", 1)
 
+        if key in metadata:
+            raise Exception(f"Error in line {line_number}: duplicated node metadata key '{key}'")
+
         if key not in {"zone", "color", "max_drones"}:
             raise Exception(f"Error in line {line_number}: invalid node metadata key '{key}'")
 
@@ -250,6 +257,9 @@ def parse_connection_metadata(raw_metadata: str | None, line_number: int) -> dic
 
         key, value = item.split("=", 1)
 
+        if key in metadata:
+            raise Exception(f"Error in line {line_number}: duplicated connection metadata key '{key}'")
+
         if key != "max_link_capacity":
             raise Exception(f"Error in line {line_number}: invalid connection metadata key '{key}'")
 
@@ -282,64 +292,11 @@ def read_input_file(file_path: str) -> list[str]:
     clean_lines: list[str] = []
 
     for line in lines:
-        line = line.strip()
+        line = line.split("#", 1)[0].strip()
 
         if not line:
-            continue
-
-        if line.startswith("#"):
             continue
 
         clean_lines.append(line)
 
     return clean_lines
-
-
-"""
-nb_drones: 12
-
-start_hub: start 0 0 [color=green max_drones=12]
-hub: gate1 1 0 [color=orange max_drones=1]
-hub: gate2 2 0 [color=orange max_drones=1]
-hub: gate3 3 0 [color=orange max_drones=1]
-hub: waiting_area1 1 1 [color=blue max_drones=4]
-hub: waiting_area2 2 1 [color=blue max_drones=4]
-hub: waiting_area3 3 1 [color=blue max_drones=4]
-hub: restricted_tunnel1 4 0 [zone=restricted color=red max_drones=2]
-hub: restricted_tunnel2 5 0 [zone=restricted color=red max_drones=2]
-hub: restricted_tunnel3 6 0 [zone=restricted color=red max_drones=2]
-hub: priority_bypass1 4 1 [zone=priority color=cyan max_drones=3]
-hub: priority_bypass2 5 1 [zone=priority color=cyan max_drones=3]
-hub: convergence 7 0 [color=yellow max_drones=6]
-hub: final_bottleneck 8 0 [color=orange max_drones=3]
-end_hub: goal 9 0 [color=green max_drones=12]
-
-# Sequential gates (major bottleneck)
-connection: start-gate1 [max_link_capacity=1]
-connection: gate1-gate2 [max_link_capacity=1]
-connection: gate2-gate3 [max_link_capacity=1]
-
-# Waiting areas for queue management
-connection: gate1-waiting_area1
-connection: gate2-waiting_area2
-connection: gate3-waiting_area3
-connection: waiting_area1-waiting_area2
-connection: waiting_area2-waiting_area3
-
-# Restricted tunnel path (slow but more capacity)
-connection: gate3-restricted_tunnel1
-connection: restricted_tunnel1-restricted_tunnel2
-connection: restricted_tunnel2-restricted_tunnel3
-connection: restricted_tunnel3-convergence
-
-# Priority bypass (fast but limited capacity)
-connection: waiting_area1-priority_bypass1
-connection: priority_bypass1-priority_bypass2
-connection: priority_bypass2-convergence
-
-# Final challenge
-connection: convergence-final_bottleneck
-connection: final_bottleneck-goal
-
-# Emergency overflow paths
-connection: waiting_area3-convergence"""
