@@ -12,7 +12,7 @@ class Game:
         self.turn: int = 0
         self.total_moves: int = 0
         self.finished: bool = False
-
+        self.drones_moved_per_turn: list[int] = []
 
 class Drone:
     def __init__(self, id: int, start_node: Node):
@@ -20,6 +20,11 @@ class Drone:
         self.current_node: Node = start_node
         self.arrived: bool = False
         self.path: list[str] = [start_node.name]  # Lista de nodos por los que el drone ha pasado
+
+        self.in_transit: bool = False
+        self.turns_left_in_transit: int = 0
+        self.target_node: Node | None = None
+        self.transit_edge: Edge | None = None
 
 
 class Edge:
@@ -47,3 +52,5 @@ class Node:
         self.capacity: int = capacity
         self.edges: list[Edge] = edges
         self.current_drones: list[Drone] = []
+        self.reserved_drones: list[Drone] = []
+        self.min_cost_to_end: float = float("inf")
