@@ -1,12 +1,14 @@
-from src.entities import Game, Drone, Node
+from __future__ import annotations
+
+from src.entities import Drone, Game, Node
 
 
-def drone_reach_end(game, drone):
+def drone_reach_end(game: Game, drone: Drone) -> None:
     drone.arrived = True
     game.finished = all(d.arrived for d in game.drones)
 
 
-def move_drone(game, drone, next_node):
+def move_drone(game: Game, drone: Drone, next_node: Node) -> None:
     # Eliminar el drone del nodo actual
     if drone in drone.current_node.current_drones:
         drone.current_node.current_drones.remove(drone)
@@ -21,7 +23,7 @@ def move_drone(game, drone, next_node):
     drone.path.append(next_node.name)
 
 
-def is_move_valid(game, drone, next_node):
+def is_move_valid(game: Game, drone: Drone, next_node: Node) -> bool:
     # Verificar que el drone no haya llegado ya
     if drone.arrived:
         return False
@@ -48,7 +50,10 @@ def is_move_valid(game, drone, next_node):
 
     # Verificar que el nodo de destino no esté lleno
     if next_node != game.start_node and next_node != game.end_node:
-        if len(next_node.current_drones) + len(next_node.reserved_drones) >= next_node.capacity:
+        if (
+            len(next_node.current_drones) + len(next_node.reserved_drones)
+            >= next_node.capacity
+        ):
             return False
 
     return True

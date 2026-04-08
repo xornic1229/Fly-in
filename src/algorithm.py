@@ -79,7 +79,11 @@ def format_node_movement(drone: Drone, node: Node) -> str:
     return color_text(f"D{drone.id}-{node.name}", node.color)
 
 
-def format_connection_movement(drone: Drone, from_node: Node, to_node: Node) -> str:
+def format_connection_movement(
+    drone: Drone,
+    from_node: Node,
+    to_node: Node,
+) -> str:
     connection_name = get_connection_name(from_node, to_node)
     return color_text(f"D{drone.id}-{connection_name}", to_node.color)
 
@@ -94,7 +98,11 @@ def unreserve_node_for_drone(node: Node, drone: Drone) -> None:
         node.reserved_drones.remove(drone)
 
 
-def get_best_next_node(game: Game, drone: Drone, used_edges_this_turn: dict[Edge, int]) -> Node | None:
+def get_best_next_node(
+    game: Game,
+    drone: Drone,
+    used_edges_this_turn: dict[Edge, int],
+) -> Node | None:
     current_node: Node = drone.current_node
     best_node: Node | None = None
 
@@ -119,7 +127,12 @@ def get_best_next_node(game: Game, drone: Drone, used_edges_this_turn: dict[Edge
     return best_node
 
 
-def start_restricted_move(game: Game, drone: Drone, next_node: Node, edge: Edge) -> str:
+def start_restricted_move(
+    game: Game,
+    drone: Drone,
+    next_node: Node,
+    edge: Edge,
+) -> str:
     current_node = drone.current_node
 
     if drone in current_node.current_drones:
@@ -166,14 +179,22 @@ def finish_restricted_move(game: Game, drone: Drone) -> str:
     return format_node_movement(drone, target_node)
 
 
-def move_one_drone(game: Game, drone: Drone, used_edges_this_turn: dict[Edge, int]) -> str | None:
+def move_one_drone(
+    game: Game,
+    drone: Drone,
+    used_edges_this_turn: dict[Edge, int],
+) -> str | None:
     if drone.arrived:
         return None
 
     if drone.in_transit:
         return finish_restricted_move(game, drone)
 
-    next_node: Node | None = get_best_next_node(game, drone, used_edges_this_turn)
+    next_node: Node | None = get_best_next_node(
+        game,
+        drone,
+        used_edges_this_turn,
+    )
 
     if next_node is None:
         return None
@@ -201,7 +222,11 @@ def play_one_turn(game: Game) -> None:
     movements: list[str] = []
 
     for drone in game.drones:
-        movement: str | None = move_one_drone(game, drone, used_edges_this_turn)
+        movement: str | None = move_one_drone(
+            game,
+            drone,
+            used_edges_this_turn,
+        )
 
         if movement is not None:
             movements.append(movement)
@@ -211,10 +236,14 @@ def play_one_turn(game: Game) -> None:
 
     if not movements:
         if not game.finished:
-            raise Exception("Error: simulation got stuck before all drones reached end_hub")
+            raise Exception(
+                "Error: simulation got stuck before all drones reached end_hub"
+            )
         return
 
-    print(" ".join(movements))
+    print(
+        " ".join(movements)
+    )
 
 
 def run_algorithm(game: Game) -> None:

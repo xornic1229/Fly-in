@@ -13,7 +13,9 @@ def get_node_entry_cost(node: Node) -> float:
     if node.zone_type == "priority":
         return 1
 
-    raise Exception(f"Error: invalid zone type '{node.zone_type}' in node '{node.name}'")
+    raise Exception(
+        f"Error: invalid zone type '{node.zone_type}' in node '{node.name}'"
+    )
 
 
 def calculate_min_cost_to_end(game: Game) -> None:
@@ -43,7 +45,8 @@ def calculate_min_cost_to_end(game: Game) -> None:
                 if neighbor_node.min_cost_to_end == float("inf"):
                     continue
 
-                new_cost = get_node_entry_cost(neighbor_node) + neighbor_node.min_cost_to_end
+                entry_cost = get_node_entry_cost(neighbor_node)
+                new_cost = entry_cost + neighbor_node.min_cost_to_end
 
                 if new_cost < node.min_cost_to_end:
                     node.min_cost_to_end = new_cost

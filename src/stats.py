@@ -13,7 +13,9 @@ def get_node_entry_cost(node: Node) -> int:
     if node.zone_type == "blocked":
         return 0
 
-    raise Exception(f"Error: invalid zone type '{node.zone_type}' in node '{node.name}'")
+    raise Exception(
+        f"Error: invalid zone type '{node.zone_type}' in node '{node.name}'"
+    )
 
 
 def get_drone_total_path_cost(game: Game, drone: Drone) -> int:
@@ -86,17 +88,24 @@ def print_stats(game: Game) -> None:
     print(f"Total moves executed: {game.total_moves}")
     print(f"Total path cost: {get_total_path_cost(game)}")
     print(f"Average turns per drone: {get_average_turns_per_drone(game):.2f}")
-    print(f"Average path cost per drone: {get_average_path_cost_per_drone(game):.2f}")
-    print(f"Average drones moved per turn: {get_average_drones_moved_per_turn(game):.2f}")
-    print(f"Max drones moved in one turn: {get_max_drones_moved_in_one_turn(game)}")
-    print(f"Min drones moved in one turn: {get_min_drones_moved_in_one_turn(game)}")
+    avg_cost = get_average_path_cost_per_drone(game)
+    print(f"Average path cost per drone: {avg_cost:.2f}")
+    avg_moved = get_average_drones_moved_per_turn(game)
+    print(f"Average drones moved per turn: {avg_moved:.2f}")
+    max_moved = get_max_drones_moved_in_one_turn(game)
+    print(f"Max drones moved in one turn: {max_moved}")
+    min_moved = get_min_drones_moved_in_one_turn(game)
+    print(f"Min drones moved in one turn: {min_moved}")
 
     print("\nDrones moved per turn:")
-    for turn_number, moved_in_turn in enumerate(game.drones_moved_per_turn, start=1):
+    for turn_number, moved_in_turn in enumerate(
+        game.drones_moved_per_turn, start=1
+    ):
         print(f"Turn {turn_number}: {moved_in_turn}")
 
     print("\nPath cost per drone:")
     for drone in game.drones:
-        print(f"D{drone.id}: {get_drone_total_path_cost(game, drone)}")
+        cost = get_drone_total_path_cost(game, drone)
+        print(f"D{drone.id}: {cost}")
 
     print("===== END STATS =====")

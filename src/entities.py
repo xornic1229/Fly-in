@@ -5,8 +5,10 @@ class Game:
     def __init__(self):
         self.drones: list[Drone] = []
         self.nb_drones: int = 0
-        self.nodes: dict[str, Node] = {}  # Si el nodo se llama A -> A: Node
-        self.edges: dict[tuple[str, str], Edge] = {}  # Si A conecta con B -> (A, B): Edge
+        # Si el nodo se llama A -> A: Node
+        self.nodes: dict[str, Node] = {}
+        # Si A conecta con B -> (A, B): Edge
+        self.edges: dict[tuple[str, str], Edge] = {}
         self.start_node: Node | None = None
         self.end_node: Node | None = None
         self.turn: int = 0
@@ -14,12 +16,14 @@ class Game:
         self.finished: bool = False
         self.drones_moved_per_turn: list[int] = []
 
+
 class Drone:
     def __init__(self, id: int, start_node: Node):
         self.id: int = id
         self.current_node: Node = start_node
         self.arrived: bool = False
-        self.path: list[str] = [start_node.name]  # Lista de nodos por los que el drone ha pasado
+        # Lista de nodos por los que el drone ha pasado
+        self.path: list[str] = [start_node.name]
 
         self.in_transit: bool = False
         self.turns_left_in_transit: int = 0
@@ -39,11 +43,22 @@ class Edge:
             return self.node2
         if current_node == self.node2:
             return self.node1
-        raise Exception(f"Error: node '{current_node.name}' is not part of this edge")
+        raise Exception(
+            f"Error: node '{current_node.name}' is not part of this edge"
+        )
 
 
 class Node:
-    def __init__(self, name: str, x: int, y: int, zone_type: str, color: str, capacity: int, edges: list[Edge]):
+    def __init__(
+        self,
+        name: str,
+        x: int,
+        y: int,
+        zone_type: str,
+        color: str,
+        capacity: int,
+        edges: list[Edge],
+    ):
         self.name: str = name
         self.x: int = x
         self.y: int = y
