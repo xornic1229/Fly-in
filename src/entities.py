@@ -2,7 +2,7 @@ from __future__ import annotations
 
 
 class Game:
-    def __init__(self):
+    def __init__(self) -> None:
         self.drones: list[Drone] = []
         self.nb_drones: int = 0
         # Si el nodo se llama A -> A: Node
@@ -18,7 +18,7 @@ class Game:
 
 
 class Drone:
-    def __init__(self, id: int, start_node: Node):
+    def __init__(self, id: int, start_node: Node) -> None:
         self.id: int = id
         self.current_node: Node = start_node
         self.arrived: bool = False
@@ -32,7 +32,7 @@ class Drone:
 
 
 class Edge:
-    def __init__(self, node1: Node, node2: Node, capacity: int):
+    def __init__(self, node1: Node, node2: Node, capacity: int) -> None:
         self.node1: Node = node1
         self.node2: Node = node2
         self.capacity: int = capacity
@@ -58,7 +58,7 @@ class Node:
         color: str,
         capacity: int,
         edges: list[Edge],
-    ):
+    ) -> None:
         self.name: str = name
         self.x: int = x
         self.y: int = y

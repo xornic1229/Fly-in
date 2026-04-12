@@ -32,6 +32,7 @@ clean:
 lint:
 	@flake8 .
 	@mypy . \
+		--explicit-package-bases \
 		--warn-return-any \
 		--warn-unused-ignores \
 		--ignore-missing-imports \
@@ -40,4 +41,4 @@ lint:
 
 lint-strict:
 	@flake8 .
-	@mypy . --strict
+	@mypy . --strict --explicit-package-bases

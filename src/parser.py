@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import cast
 from src.entities import Game, Drone, Node, Edge
 
 
@@ -37,9 +38,9 @@ def parse_input_file(file_path: str) -> Game:
                 name,
                 x,
                 y,
-                attributes.get("zone", "normal"),
-                attributes.get("color", "none"),
-                attributes.get("max_drones", 1),
+                cast(str, attributes.get("zone", "normal")),
+                cast(str, attributes.get("color", "none")),
+                cast(int, attributes.get("max_drones", 1)),
                 [],
             )
             game.nodes[name] = node
@@ -64,9 +65,9 @@ def parse_input_file(file_path: str) -> Game:
                 name,
                 x,
                 y,
-                attributes.get("zone", "normal"),
-                attributes.get("color", "none"),
-                attributes.get("max_drones", 1),
+                cast(str, attributes.get("zone", "normal")),
+                cast(str, attributes.get("color", "none")),
+                cast(int, attributes.get("max_drones", 1)),
                 [],
             )
             game.nodes[name] = node
@@ -86,9 +87,9 @@ def parse_input_file(file_path: str) -> Game:
                 name,
                 x,
                 y,
-                attributes.get("zone", "normal"),
-                attributes.get("color", "none"),
-                attributes.get("max_drones", 1),
+                cast(str, attributes.get("zone", "normal")),
+                cast(str, attributes.get("color", "none")),
+                cast(int, attributes.get("max_drones", 1)),
                 [],
             )
             game.nodes[name] = node
@@ -109,7 +110,9 @@ def parse_input_file(file_path: str) -> Game:
                     f"undefined node '{node2_name}'"
                 )
 
-            normalized_connection = tuple(sorted((node1_name, node2_name)))
+            normalized_connection: tuple[str, str] = tuple(
+                sorted((node1_name, node2_name))
+            )  # type: ignore
             if normalized_connection in seen_connections:
                 raise Exception(
                     f"Error in line {line_number}: duplicated connection "
@@ -123,7 +126,7 @@ def parse_input_file(file_path: str) -> Game:
             edge = Edge(
                 node1,
                 node2,
-                attributes.get("max_link_capacity", 1),
+                cast(int, attributes.get("max_link_capacity", 1)),
             )
 
             game.edges[normalized_connection] = edge
