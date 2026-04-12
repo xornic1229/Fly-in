@@ -1,0 +1,9 @@
+nb_drones: 1
+start_hub: start 0 0
+hub: normal_way 1 0 [zone=normal color=blue]
+hub: priority_way 1 1 [zone=priority color=green]
+end_hub: goal 2 0
+connection: start-normal_way
+connection: normal_way-goal
+connection: start-priority_way
+connection: priority_way-goal

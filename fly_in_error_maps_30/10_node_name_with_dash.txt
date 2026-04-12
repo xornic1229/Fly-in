@@ -1,0 +1,4 @@
+nb_drones: 2
+start_hub: st-art 0 0
+end_hub: goal 1 1
+connection: st-art-goal

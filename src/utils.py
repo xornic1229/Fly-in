@@ -9,34 +9,34 @@ def drone_reach_end(game: Game, drone: Drone) -> None:
 
 
 def move_drone(game: Game, drone: Drone, next_node: Node) -> None:
-    # Eliminar el drone del nodo actual
+    # Remove drone from current node
     if drone in drone.current_node.current_drones:
         drone.current_node.current_drones.remove(drone)
 
-    # Agregar el drone al nuevo nodo
+    # Add drone to new node
     next_node.current_drones.append(drone)
 
-    # Actualizar la posición del drone
+    # Update drone position
     drone.current_node = next_node
 
-    # Agregar el nuevo nodo al path del drone
+    # Add new node to drone path
     drone.path.append(next_node.name)
 
 
 def is_move_valid(game: Game, drone: Drone, next_node: Node) -> bool:
-    # Verificar que el drone no haya llegado ya
+    # Check that drone has not already arrived
     if drone.arrived:
         return False
 
-    # Verificar que el drone no esté en tránsito
+    # Check that drone is not in transit
     if drone.in_transit:
         return False
 
-    # Verificar que el nodo de destino no esté bloqueado
+    # Check that destination node is not blocked
     if next_node.zone_type == "blocked":
         return False
 
-    # Verificar que exista conexión con el nodo actual
+    # Check that connection exists with current node
     current_node = drone.current_node
     connected = False
 
@@ -48,7 +48,7 @@ def is_move_valid(game: Game, drone: Drone, next_node: Node) -> bool:
     if not connected:
         return False
 
-    # Verificar que el nodo de destino no esté lleno
+    # Check that destination node is not full
     if next_node != game.start_node and next_node != game.end_node:
         if (
             len(next_node.current_drones) + len(next_node.reserved_drones)

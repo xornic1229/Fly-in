@@ -1,0 +1,12 @@
+# mapa de prueba
+
+nb_drones: 2
+
+start_hub: start 0 0 [color=green]
+
+hub: a 1 0 [color=blue]   # nodo intermedio
+
+end_hub: goal 2 0 [color=yellow]
+
+connection: start-a
+connection: a-goal

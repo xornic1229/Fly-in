@@ -5,9 +5,9 @@ class Game:
     def __init__(self) -> None:
         self.drones: list[Drone] = []
         self.nb_drones: int = 0
-        # Si el nodo se llama A -> A: Node
+        # If node is called A -> A: Node
         self.nodes: dict[str, Node] = {}
-        # Si A conecta con B -> (A, B): Edge
+        # If A connects with B -> (A, B): Edge
         self.edges: dict[tuple[str, str], Edge] = {}
         self.start_node: Node | None = None
         self.end_node: Node | None = None
@@ -22,7 +22,7 @@ class Drone:
         self.id: int = id
         self.current_node: Node = start_node
         self.arrived: bool = False
-        # Lista de nodos por los que el drone ha pasado
+        # List of nodes the drone has passed through
         self.path: list[str] = [start_node.name]
 
         self.in_transit: bool = False
